@@ -1,0 +1,27 @@
+app trello {
+  title: "trello"
+}
+
+auth {
+    userEntity: User,
+    methods: [ EmailAndPassword ],
+    onAuthFailedRedirectTo: "/login"
+}
+
+route "/" -> page Main
+page Main {
+  component: import Main from "@ext/MainPage.js"
+}
+
+route "/signup" -> page Signup
+page Signup {
+    component: import Signup from "@ext/SignupPage"
+}
+
+// Entities
+
+entity User {=psl
+    id          Int     @id @default(autoincrement())
+    email       String  @unique
+    password    String
+psl=}
