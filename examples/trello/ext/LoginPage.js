@@ -1,21 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import SignupForm from '@wasp/auth/forms/Signup'
+import LoginForm from '@wasp/auth/forms/Login'
 
 import mainLogo from './waspello-logo.svg'
 import './Signup.css'
 
-const SignupPage = (props) => {
+const LoginPage = (props) => {
   return (
     <div className="auth-root-container">
 
       <img alt="Waspello" className="main-logo" src={mainLogo} />
 
       <div className="auth-form-container">
-        <SignupForm/>
+        <LoginForm/>
         <p>
-          I already have an account (<Link to="/login">go to login</Link>).
+          I don't have an account yet (<Link to="/signup">go to signup</Link>).
         </p>
       </div>
 
@@ -23,4 +23,4 @@ const SignupPage = (props) => {
   )
 }
 
-export default SignupPage
+export default LoginPage

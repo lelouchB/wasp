@@ -1,4 +1,4 @@
-.signup-top-container {
+.auth-root-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -6,7 +6,7 @@
   background-color: #F9FAFC;
 }
 
-.signup-form-container {
+.auth-form-container {
   display: flex;
   flex-direction: column;
   align-items: center;

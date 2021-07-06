@@ -1,0 +1,22 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  
+  background-color: #bb9b02;
+  color: #fff;
+}
+
+.navbar-item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-item:first-child > span { margin-right: auto; }
+
+.navbar-item:last-child > span { margin-left: auto; }
