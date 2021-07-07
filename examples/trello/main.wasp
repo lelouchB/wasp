@@ -30,4 +30,20 @@ entity User {=psl
     id          Int     @id @default(autoincrement())
     email       String  @unique
     password    String
+    lists       List[]
 psl=}
+
+entity List {=psl
+    id          Int     @id @default(autoincrement())
+    name        String
+    user        User    @relation(fields: [userId], references: [id])
+    userId      Int
+psl=}
+
+// Queries and actions
+
+// action createList {}
+
+dependencies {=json
+    "react-feather": "2.0.9"
+json=}

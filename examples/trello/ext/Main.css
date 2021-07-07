@@ -79,3 +79,36 @@ code {
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
 }
+
+
+#board {
+  display: flex;
+}
+
+button {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.list-wrapper {
+  background-color: #ebecf0;
+  width: 272px;
+  padding: 4px;
+  border-radius: 3px;
+}
+
+button.open-add-list {
+  display: flex;
+
+  width: 100%;
+  padding: 6px 8px;
+
+  border: none;
+  background-color: inherit;
+  color: #5e6c84;
+  cursor: pointer;
+}
+
+.add-list-icon {
+  margin-right: 5px;
+}
