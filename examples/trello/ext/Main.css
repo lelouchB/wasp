@@ -85,9 +85,19 @@ code {
   display: flex;
 }
 
-button {
+button, input[type=button], input[type=submit] {
+  cursor: pointer;
+}
+
+button, input {
+  color: #172b4d;
   font-size: 14px;
   font-weight: 400;
+}
+
+input {
+  border-radius: 3px;
+  padding: 8px 12px;
 }
 
 .list-wrapper {
@@ -95,6 +105,17 @@ button {
   width: 272px;
   padding: 4px;
   border-radius: 3px;
+}
+
+.list-name-input {
+  outline: none;
+  border: none;
+  box-shadow: inset 0 0 0 2px #0079bf;
+  width: 100%
+}
+
+.list-name-input:focus {
+  border: none;
 }
 
 button.open-add-list {
@@ -106,9 +127,23 @@ button.open-add-list {
   border: none;
   background-color: inherit;
   color: #5e6c84;
-  cursor: pointer;
 }
 
 .add-list-icon {
   margin-right: 5px;
+}
+
+.list-add-controls {
+  display: flex;
+  align-items: center;
+
+  margin: 4px 0 0;
+}
+
+.list-add-button {
+  margin-right: 5px;
+}
+
+.list-cancel-edit {
+  cursor: pointer;
 }
