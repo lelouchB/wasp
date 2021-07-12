@@ -81,8 +81,11 @@ code {
 }
 
 
+
+
+
 #board {
-  display: flex;
+  height: 100vh;
 }
 
 button, input[type=button], input[type=submit] {
@@ -100,11 +103,24 @@ input {
   padding: 8px 12px;
 }
 
+.list-wrapper:first-child {
+  margin-left: 8px;
+}
+
 .list-wrapper {
   background-color: #ebecf0;
   width: 272px;
   padding: 4px;
   border-radius: 3px;
+}
+
+.list-wrapper.mod-add {
+  background-color: #ebecf0;
+  transition: 85ms ease-in,opacity 40ms ease-in,border-color 85ms ease-in;
+}
+
+.list-wrapper.mod-add.is-idle {
+  background-color: hsla(0,0%,100%,.24);
 }
 
 .list-name-input {
@@ -125,8 +141,8 @@ button.open-add-list {
   padding: 6px 8px;
 
   border: none;
-  background-color: inherit;
-  color: #5e6c84;
+  background-color: Transparent;
+  color: #fff;
 }
 
 .add-list-icon {
@@ -147,3 +163,16 @@ button.open-add-list {
 .list-cancel-edit {
   cursor: pointer;
 }
+
+/* Board header */
+
+.board-header {
+  padding: 8px 4px 4px 8px;
+}
+
+.board-header-text {
+  color: #fff;
+  font-size: 18px; 
+  font-weight: 700;
+}
+

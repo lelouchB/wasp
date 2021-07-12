@@ -45,5 +45,6 @@ psl=}
 // action createList {}
 
 dependencies {=json
-    "react-feather": "2.0.9"
+    "react-feather": "2.0.9",
+    "classnames": "2.3.1"
 json=}

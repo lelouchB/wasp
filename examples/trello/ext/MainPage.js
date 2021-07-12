@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Plus, X } from 'react-feather'
+import classnames from 'classnames'
 
 import UserPageLayout from './UserPageLayout'
 
@@ -10,7 +11,11 @@ import './Main.css'
 const MainPage = ({ user }) => {
   return (
     <UserPageLayout user={user}>
-      <span>This is the beginning of our new Trello app - Waspello.</span>
+      <div className='board-header'>
+        <div className='board-name'>
+          <h1 className='board-header-text'>Your board</h1>
+        </div>
+      </div>
 
       <div id='board'>
         <AddList />
@@ -69,7 +74,11 @@ const AddList = () => {
     }
 
     return (
-      <div className='add-list list-wrapper'>
+      <div
+        className={classnames(
+          'add-list', 'list-wrapper', 'mod-add', { 'is-idle': !isInEditMode }
+        )}
+      >
         { isInEditMode ? <AddListInput /> : <AddListButton /> }
       </div>
     )
