@@ -42,7 +42,15 @@ psl=}
 
 // Queries and actions
 
-// action createList {}
+query getLists {
+  fn: import { getLists } from "@ext/queries.js",
+  entities: [List]
+}
+
+action createList {
+    fn: import { createList } from "@ext/actions.js",
+    entities: [List]
+}
 
 dependencies {=json
     "react-feather": "2.0.9",

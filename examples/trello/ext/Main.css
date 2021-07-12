@@ -107,16 +107,25 @@ input {
   margin-left: 8px;
 }
 
+.list-wrapper:last-child {
+  margin-right: 8px;
+}
+
 .list-wrapper {
   background-color: #ebecf0;
-  width: 272px;
-  padding: 4px;
   border-radius: 3px;
+  width: 272px;
+  margin: 0 4px;
+  padding: 4px;
+
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .list-wrapper.mod-add {
   background-color: #ebecf0;
-  transition: 85ms ease-in,opacity 40ms ease-in,border-color 85ms ease-in;
+  //transition: 85ms ease-in,opacity 40ms ease-in,border-color 85ms ease-in;
 }
 
 .list-wrapper.mod-add.is-idle {
