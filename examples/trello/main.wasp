@@ -52,6 +52,11 @@ action createList {
     entities: [List]
 }
 
+action updateList {
+    fn: import { updateList } from "@ext/actions.js",
+    entities: [List]
+}
+
 dependencies {=json
     "react-feather": "2.0.9",
     "classnames": "2.3.1"

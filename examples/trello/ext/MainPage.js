@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import { useQuery } from '@wasp/queries'
 import getLists from '@wasp/queries/getLists'
 import createList from '@wasp/actions/createList'
+import updateList from '@wasp/actions/updateList'
 
 import UserPageLayout from './UserPageLayout'
 
@@ -14,8 +15,6 @@ import './Main.css'
 
 const MainPage = ({ user }) => {
   const { data: lists, isFetching, error } = useQuery(getLists)
-
-  console.log(lists)
 
   return (
     <UserPageLayout user={user}>
@@ -42,9 +41,27 @@ const Lists = ({ lists }) => {
 }
 
 const List = ({ list }) => {
+  const handleListNameUpdated = async (listId, newName) => {
+    await updateList({ listId, data: { name: newName } })
+
+    try {
+
+    } catch (err) {
+      window.alert('Error while updating list name: ' + err.message)
+    }
+  }
+
   return (
     <div className='list-wrapper'>
-      <span>{ list.name }</span>
+      <div className='list'>
+        <div className='list-header'>
+          <textarea
+            className='list-header-name mod-list-name'
+            onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
+            defaultValue={ list.name }
+          />
+        </div>
+      </div>
     </div>
   )
 }
