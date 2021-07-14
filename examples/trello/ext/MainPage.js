@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Plus, X } from 'react-feather'
+import { Plus, X, MoreHorizontal } from 'react-feather'
+import { Popover } from 'react-tiny-popover'
 import classnames from 'classnames'
 
 import { useQuery } from '@wasp/queries'
@@ -41,6 +42,8 @@ const Lists = ({ lists }) => {
 }
 
 const List = ({ list }) => {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+
   const handleListNameUpdated = async (listId, newName) => {
     await updateList({ listId, data: { name: newName } })
 
@@ -49,6 +52,23 @@ const List = ({ list }) => {
     } catch (err) {
       window.alert('Error while updating list name: ' + err.message)
     }
+  }
+
+  const ListMenu = () => {
+    return (
+      <div className='popover-menu'>
+        <div className='popover-header'>
+          <div className='popover-header-item'>
+            <button className='popover-header-close-btn dark-hover fake-invisible-item'><X size={16}/></button>
+          </div>
+          <span className='popover-header-title popover-header-item'>List&nbsp;actions</span>
+          <div className='popover-header-item'>
+            <button className='popover-header-close-btn dark-hover'><X size={16}/></button>
+          </div>
+        </div>
+        <div className='popover-content'></div>
+      </div>
+    )
   }
 
   return (
@@ -60,6 +80,22 @@ const List = ({ list }) => {
             onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
             defaultValue={ list.name }
           />
+          <div className='list-header-extras'>
+            <Popover
+              isOpen={isPopoverOpen}
+              positions={['bottom', 'right', 'left']}
+              align='start'
+              padding={6}
+              content={<ListMenu/>}
+            >
+              <div
+                className='list-header-extras-menu dark-hover'
+                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+              >
+                <MoreHorizontal size={16}/>
+              </div>
+            </Popover>
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +146,7 @@ const AddList = () => {
             className='list-cancel-edit'
             onClick={() => setIsInEditMode(false)}
           >
-            <X  />
+            <X/>
           </div>
         </div>
       </form>

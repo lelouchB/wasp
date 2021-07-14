@@ -59,5 +59,6 @@ action updateList {
 
 dependencies {=json
     "react-feather": "2.0.9",
-    "classnames": "2.3.1"
+    "classnames": "2.3.1",
+    "react-tiny-popover": "6.0.5"
 json=}
