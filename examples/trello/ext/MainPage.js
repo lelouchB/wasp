@@ -194,10 +194,14 @@ const AddList = () => {
 }
 
 const AddCard = () => {
+  const [isInEditMode, setIsInEditMode] = useState(false)
 
   const AddCardButton = () => {
     return (
-      <button className='open-card-composer dark-hover'>
+      <button
+        className='open-card-composer dark-hover'
+        onClick={() => setIsInEditMode(true)}
+      >
         <div className='add-icon'>
           <Plus size={16} strokeWidth={2} />
         </div>
@@ -206,9 +210,47 @@ const AddCard = () => {
     )
   }
 
+  const AddCardInput = () => {
+    const handleAddCard = async (event) => {
+      event.preventDefault()
+      try {
+        const cardTitle = event.target.cardTitle.value
+        event.target.reset()
+
+        console.log('create card with title: ', cardTitle) 
+      
+      } catch (err) {
+        window.alert('Error: ' + err.message)
+      }
+    }
+
+    return (
+      <form className='card-composer' onSubmit={handleAddCard}>
+        <div className='list-card'>
+          <textarea
+            className='card-composer-textarea'
+            name='cardTitle'
+            placeholder='Enter a title for this card...'
+          />
+        </div>
+        <div className='card-add-controls'>
+          <input className='card-add-button' type='submit' value='Add card' />
+          <div
+            className='card-cancel-edit'
+            onClick={() => setIsInEditMode(false)}
+          >
+            <X/>
+          </div>
+        </div>
+
+      </form>
+    )
+
+  }
+
   return (
     <div>
-      <AddCardButton />
+      { isInEditMode ? <AddCardInput /> : <AddCardButton /> }
     </div>
   )
 }

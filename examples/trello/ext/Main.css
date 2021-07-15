@@ -82,6 +82,10 @@ code {
 
 /* Global stuff */
 
+textarea::placeholder {
+  color: #5e6c84;  
+}
+
 /* input:not([type=file]), textarea { */
 textarea {
   width: 100%;
@@ -322,6 +326,10 @@ textarea.mod-list-name:focus {
   margin: 0 8px;
 }
 
+.card-composer {
+  padding-bottom: 8px;
+}
+
 button.open-card-composer {
   width: 100%;
   display: flex;
@@ -332,6 +340,38 @@ button.open-card-composer {
   line-height: 20px;
 
   color: #5e6c84;
+}
+
+.card-add-controls {
+  display: flex;
+  align-items: center;
+
+  margin: 4px 0 0;
+}
+
+.card-cancel-edit {
+  cursor: pointer;
+}
+
+textarea.card-composer-textarea {
+  background: none;
+  border: none;
+  box-shadow: none;
+  resize: none;
+  margin-bottom: 4px;
+  min-height: 54px;
+}
+
+.list-card {
+  border-radius: 3px;
+  background-color: #fff;
+  margin-bottom: 8px;
+  padding: 6px 8px 2px;
+  box-shadow: 0 1px 0 rgb(9 30 66 / 25%);
+}
+
+.card-add-button {
+  margin-right: 5px;
 }
 
 /* Board header */
