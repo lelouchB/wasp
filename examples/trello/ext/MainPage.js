@@ -7,6 +7,7 @@ import { useQuery } from '@wasp/queries'
 import getLists from '@wasp/queries/getLists'
 import createList from '@wasp/actions/createList'
 import updateList from '@wasp/actions/updateList'
+import deleteList from '@wasp/actions/deleteList'
 
 import UserPageLayout from './UserPageLayout'
 
@@ -38,20 +39,27 @@ const Lists = ({ lists }) => {
     // TODO(matija): what if lists is empty? Although we make sure not to add it to dom
     // in that case.
 
-    return lists.map((list, idx) => <List list={list} key={idx} />) 
+    return lists.map((list) => <List list={list} key={list.id} />) 
 }
 
 const List = ({ list }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const handleListNameUpdated = async (listId, newName) => {
-    await updateList({ listId, data: { name: newName } })
-
     try {
-
+      await updateList({ listId, data: { name: newName } })
     } catch (err) {
       window.alert('Error while updating list name: ' + err.message)
     }
+  }
+
+  const handleDeleteList = async (listId) => {
+    try {
+      await deleteList({ listId })
+    } catch (err) {
+      window.alert('Error while deleting list: ' + err.message)
+    }
+    setIsPopoverOpen(false)
   }
 
   const ListMenu = () => {
@@ -72,10 +80,14 @@ const List = ({ list }) => {
           </div>
         </div>
         <div className='popover-content'>
-          <ul class='popover-content-list'>
+          <ul className='popover-content-list'>
             <li><button>Add card...</button></li>
             <li><button>Copy list...</button></li>
-            <li><button>Delete this list</button></li>
+            <li>
+              <button onClick={() => handleDeleteList(list.id)}>
+                Delete this list
+              </button>
+            </li>
           </ul>
         </div>
       </div>
