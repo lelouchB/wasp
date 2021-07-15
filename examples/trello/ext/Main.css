@@ -82,12 +82,9 @@ code {
 
 /* Global stuff */
 
-textarea {
-  width: 100%;
-}
-
 /* input:not([type=file]), textarea { */
 textarea {
+  width: 100%;
   outline: none;
   border: none;
 
@@ -99,10 +96,10 @@ textarea {
   line-height: 20px;
 }
 
-
-
-#board {
-  height: 100vh;
+button {
+  border: none;
+  outline: none;
+  background: transparent;
 }
 
 button, input[type=button], input[type=submit] {
@@ -119,6 +116,18 @@ input {
   border-radius: 3px;
   padding: 8px 12px;
 }
+
+ol, ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#board {
+  height: 100vh;
+}
+
+/* List */
 
 .list-wrapper:first-child {
   margin-left: 8px;
@@ -166,8 +175,6 @@ button.open-add-list {
   width: 100%;
   padding: 6px 8px;
 
-  border: none;
-  background-color: Transparent;
   color: #fff;
 }
 
@@ -243,13 +250,14 @@ textarea.mod-list-name:focus {
   box-shadow: inset 0 0 0 2px  #0079bf;
 }
 
+/* List popover menu */
+
 .popover-menu {
   background: #fff;
   width: 304px;
   border-radius: 3px;
   box-shadow: 0 8px 16px -4px rgb(9 30 66 / 25%), 0 0 0 1px rgb(9 30 66 / 8%);
 }
-
 
 .popover-header {
   display: flex;
@@ -275,7 +283,6 @@ textarea.mod-list-name:focus {
 
 .popover-header-item:last-child { margin-left: auto }
 
-
 .popover-header-title {
   display: block;
   color: #5e6c84;
@@ -289,13 +296,23 @@ textarea.mod-list-name:focus {
   padding: 6px;
   height: 28px;
 
-  border: none;
-  outline: none;
-  background: transparent;
   color: #6b778c;
 }
 
-.popoover-content {
+.popover-content {
+  padding: 0 0 12px;
+}
+
+.popover-content-list li>button {
+  width: 100%;
+  text-align: left;
+
+  padding: 6px 12px;;
+  line-height: 20px;
+}
+
+.popover-content-list li>button:hover {
+  background-color: rgba(9,30,66,.04);
 }
 
 /* Board header */

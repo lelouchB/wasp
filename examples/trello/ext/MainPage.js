@@ -63,10 +63,21 @@ const List = ({ list }) => {
           </div>
           <span className='popover-header-title popover-header-item'>List&nbsp;actions</span>
           <div className='popover-header-item'>
-            <button className='popover-header-close-btn dark-hover'><X size={16}/></button>
+            <button
+              className='popover-header-close-btn dark-hover'
+              onClick={() => setIsPopoverOpen(false)}
+            >
+              <X size={16}/>
+            </button>
           </div>
         </div>
-        <div className='popover-content'></div>
+        <div className='popover-content'>
+          <ul class='popover-content-list'>
+            <li><button>Add card...</button></li>
+            <li><button>Copy list...</button></li>
+            <li><button>Delete this list</button></li>
+          </ul>
+        </div>
       </div>
     )
   }
@@ -83,6 +94,7 @@ const List = ({ list }) => {
           <div className='list-header-extras'>
             <Popover
               isOpen={isPopoverOpen}
+              onClickOutside={() => setIsPopoverOpen(false)}
               positions={['bottom', 'right', 'left']}
               align='start'
               padding={6}

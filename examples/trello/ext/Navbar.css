@@ -21,3 +21,7 @@
 .navbar-item:first-child > span { margin-right: auto; }
 
 .navbar-item:last-child > span { margin-left: auto; }
+
+.logout-btn {
+  color: #fff;
+}
