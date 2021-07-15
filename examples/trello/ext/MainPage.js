@@ -164,6 +164,7 @@ const AddList = () => {
       <form onSubmit={handleAddList}>
         <input
           className='list-name-input'
+          autoFocus
           name='listName'
           type='text'
           defaultValue=''
@@ -229,6 +230,7 @@ const AddCard = () => {
         <div className='list-card'>
           <textarea
             className='card-composer-textarea'
+            autoFocus
             name='cardTitle'
             placeholder='Enter a title for this card...'
           />
