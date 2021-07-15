@@ -120,6 +120,11 @@ const List = ({ list }) => {
               </div>
             </Popover>
           </div>
+        </div> {/* eof list-header */}
+        <div className='list-cards'>
+        </div>
+        <div className='card-composer-container'>
+          <AddCard />
         </div>
       </div>
     </div>
@@ -135,7 +140,7 @@ const AddList = () => {
         className='open-add-list'
         onClick={() => setIsInEditMode(true)}
       >
-          <div className='add-list-icon'>
+          <div className='add-icon'>
             <Plus size={16} strokeWidth={2} />
           </div>
           Add a list
@@ -184,6 +189,26 @@ const AddList = () => {
       )}
     >
       { isInEditMode ? <AddListInput /> : <AddListButton /> }
+    </div>
+  )
+}
+
+const AddCard = () => {
+
+  const AddCardButton = () => {
+    return (
+      <button className='open-card-composer dark-hover'>
+        <div className='add-icon'>
+          <Plus size={16} strokeWidth={2} />
+        </div>
+        Add a card
+      </button>
+    )
+  }
+
+  return (
+    <div>
+      <AddCardButton />
     </div>
   )
 }
