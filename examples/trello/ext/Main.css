@@ -362,12 +362,28 @@ textarea.card-composer-textarea {
   min-height: 54px;
 }
 
+.list-cards {
+  margin: 0 4px;
+  padding: 0 4px;
+}
+
 .list-card {
   border-radius: 3px;
   background-color: #fff;
   margin-bottom: 8px;
   padding: 6px 8px 2px;
   box-shadow: 0 1px 0 rgb(9 30 66 / 25%);
+}
+
+.list-card-title {
+  display: block;
+  margin: 0 0 4px;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+
+  cursor: pointer;
 }
 
 .card-add-button {

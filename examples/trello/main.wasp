@@ -31,16 +31,36 @@ entity User {=psl
     email       String  @unique
     password    String
     lists       List[]
+    cards       Card[]
 psl=}
 
 entity List {=psl
     id          Int     @id @default(autoincrement())
     name        String
+
+    // List has a single author.
     user        User    @relation(fields: [userId], references: [id])
     userId      Int
+
+    cards       Card[]
 psl=}
 
-// Queries and actions
+entity Card {=psl
+    id          Int     @id @default(autoincrement())
+    title       String
+
+    // Card belongs to a single list.
+    list        List    @relation(fields: [listId], references: [id])
+    listId      Int
+
+    // Card has a single author.
+    author      User    @relation(fields: [authorId], references: [id])
+    authorId    Int
+psl=}
+
+// ------------------- Queries and actions
+
+// Lists
 
 query getLists {
   fn: import { getLists } from "@ext/queries.js",
@@ -60,6 +80,18 @@ action updateList {
 action deleteList {
     fn: import { deleteList } from "@ext/actions.js",
     entities: [List]
+}
+
+// Cards
+
+query getCards {
+    fn: import { getCards } from "@ext/queries.js",
+    entities: [Card]
+}
+
+action createCard {
+    fn: import { createCard } from "@ext/actions.js",
+    entities: [Card]
 }
 
 dependencies {=json

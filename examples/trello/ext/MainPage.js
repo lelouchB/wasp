@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Plus, X, MoreHorizontal } from 'react-feather'
 import { Popover } from 'react-tiny-popover'
 import classnames from 'classnames'
@@ -8,6 +8,9 @@ import getLists from '@wasp/queries/getLists'
 import createList from '@wasp/actions/createList'
 import updateList from '@wasp/actions/updateList'
 import deleteList from '@wasp/actions/deleteList'
+
+import getCards from '@wasp/queries/getCards'
+import createCard from '@wasp/actions/createCard'
 
 import UserPageLayout from './UserPageLayout'
 
@@ -43,6 +46,8 @@ const Lists = ({ lists }) => {
 }
 
 const List = ({ list }) => {
+  const { data: cards, isFetching, error } = useQuery(getCards, { listId: list.id })
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const handleListNameUpdated = async (listId, newName) => {
@@ -121,12 +126,29 @@ const List = ({ list }) => {
             </Popover>
           </div>
         </div> {/* eof list-header */}
-        <div className='list-cards'>
-        </div>
+
+        { cards && <Cards cards={cards} /> }
+
         <div className='card-composer-container'>
-          <AddCard />
+          <AddCard listId={list.id} />
         </div>
       </div>
+    </div>
+  )
+}
+
+const Cards = ({ cards }) => {
+  return (
+    <div className='list-cards'>
+      { cards.map((card) => <Card card={card} key={card.id} />) }
+    </div>
+  )
+}
+
+const Card = ({ card }) => {
+  return (
+    <div className='list-card'>
+      <span className='list-card-title'>{ card.title }</span>
     </div>
   )
 }
@@ -194,7 +216,7 @@ const AddList = () => {
   )
 }
 
-const AddCard = () => {
+const AddCard = ({ listId }) => {
   const [isInEditMode, setIsInEditMode] = useState(false)
 
   const AddCardButton = () => {
@@ -211,25 +233,36 @@ const AddCard = () => {
     )
   }
 
-  const AddCardInput = () => {
-    const handleAddCard = async (event) => {
+  const AddCardInput = ({ listId }) => {
+    const formRef = useRef(null)
+
+    const submitOnEnter = (e) => {
+      if (e.keyCode == 13 /* && e.shiftKey == false */) {
+        e.preventDefault()
+
+        formRef.current.dispatchEvent(
+          new Event('submit', { cancelable: true, bubbles: true })
+        )
+      }
+    }
+
+    const handleAddCard = async (event, listId) => {
       event.preventDefault()
       try {
         const cardTitle = event.target.cardTitle.value
         event.target.reset()
-
-        console.log('create card with title: ', cardTitle) 
-      
+        await createCard({ title: cardTitle, listId })
       } catch (err) {
         window.alert('Error: ' + err.message)
       }
     }
 
     return (
-      <form className='card-composer' onSubmit={handleAddCard}>
+      <form className='card-composer' ref={formRef} onSubmit={(e) => handleAddCard(e, listId)}>
         <div className='list-card'>
           <textarea
             className='card-composer-textarea'
+            onKeyDown={submitOnEnter}
             autoFocus
             name='cardTitle'
             placeholder='Enter a title for this card...'
@@ -244,7 +277,6 @@ const AddCard = () => {
             <X/>
           </div>
         </div>
-
       </form>
     )
 
@@ -252,7 +284,7 @@ const AddCard = () => {
 
   return (
     <div>
-      { isInEditMode ? <AddCardInput /> : <AddCardButton /> }
+      { isInEditMode ? <AddCardInput listId={listId} /> : <AddCardButton /> }
     </div>
   )
 }

@@ -1,5 +1,7 @@
 import HttpError from '@wasp/core/HttpError.js'
 
+/* List */
+
 export const createList = async ({ name }, context) => {
   if (!context.user) { throw new HttpError(403) }
   return context.entities.List.create({
@@ -27,5 +29,18 @@ export const deleteList = async ({ listId }, context) => {
   await context.entities.List.delete({
     where: { id: listId }
   })
-
 }
+
+/* Card */
+
+export const createCard = async ({ title, listId }, context) => {
+  if (!context.user) { throw new HttpError(403) }
+  return context.entities.Card.create({
+    data: {
+      title,
+      list: { connect: { id: listId } },
+      author: { connect: { id: context.user.id } }
+    }
+  })
+}
+
