@@ -29,7 +29,7 @@ const MainPage = ({ user }) => {
         </div>
       </div>
 
-      <div id='board'>
+      <div id='board' className='u-fancy-scrollbar'>
         { lists && <Lists lists={lists} />}
         <AddList />
       </div>
