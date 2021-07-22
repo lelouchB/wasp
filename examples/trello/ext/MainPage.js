@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { Plus, X, MoreHorizontal } from 'react-feather'
 import { Popover } from 'react-tiny-popover'
 import classnames from 'classnames'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import { useQuery } from '@wasp/queries'
 import getLists from '@wasp/queries/getLists'
@@ -21,6 +22,10 @@ import './Main.css'
 const MainPage = ({ user }) => {
   const { data: lists, isFetching, error } = useQuery(getLists)
 
+  const onDragEnd = () => {
+    console.log('onDragEnd!')
+  }
+
   return (
     <UserPageLayout user={user}>
       <div className='board-header'>
@@ -29,10 +34,20 @@ const MainPage = ({ user }) => {
         </div>
       </div>
 
-      <div id='board' className='u-fancy-scrollbar'>
-        { lists && <Lists lists={lists} />}
-        <AddList />
-      </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable" direction="horizontal">
+          {(provided, snapshot) => (
+            <div id='board' className='u-fancy-scrollbar'
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              { lists && <Lists lists={lists} />}
+              {provided.placeholder}
+              <AddList />
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
 
     </UserPageLayout>
   )
@@ -42,10 +57,12 @@ const Lists = ({ lists }) => {
     // TODO(matija): what if lists is empty? Although we make sure not to add it to dom
     // in that case.
 
-    return lists.map((list) => <List list={list} key={list.id} />) 
+    return lists.map((list, index) => (
+      <List list={list} key={list.id} index={index} />
+    )) 
 }
 
-const List = ({ list }) => {
+const List = ({ list, index }) => {
   const { data: cards, isFetching, error } = useQuery(getCards, { listId: list.id })
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -100,40 +117,52 @@ const List = ({ list }) => {
   }
 
   return (
-    <div className='list-wrapper'>
-      <div className='list'>
-        <div className='list-header'>
-          <textarea
-            className='list-header-name mod-list-name'
-            onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
-            defaultValue={ list.name }
-          />
-          <div className='list-header-extras'>
-            <Popover
-              isOpen={isPopoverOpen}
-              onClickOutside={() => setIsPopoverOpen(false)}
-              positions={['bottom', 'right', 'left']}
-              align='start'
-              padding={6}
-              content={<ListMenu/>}
-            >
-              <div
-                className='list-header-extras-menu dark-hover'
-                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-              >
-                <MoreHorizontal size={16}/>
+    <Draggable
+      key={list.id}
+      draggableId={`dragItem-${list.id}`}
+      index={index}
+    >
+      {(provided, snapshot) => (
+        <div className='list-wrapper'
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <div className='list'>
+            <div className='list-header'>
+              <textarea
+                className='list-header-name mod-list-name'
+                onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
+                defaultValue={ list.name }
+              />
+              <div className='list-header-extras'>
+                <Popover
+                  isOpen={isPopoverOpen}
+                  onClickOutside={() => setIsPopoverOpen(false)}
+                  positions={['bottom', 'right', 'left']}
+                  align='start'
+                  padding={6}
+                  content={<ListMenu/>}
+                >
+                  <div
+                    className='list-header-extras-menu dark-hover'
+                    onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                  >
+                    <MoreHorizontal size={16}/>
+                  </div>
+                </Popover>
               </div>
-            </Popover>
+            </div> {/* eof list-header */}
+
+            { cards && <Cards cards={cards} /> }
+
+            <div className='card-composer-container'>
+              <AddCard listId={list.id} />
+            </div>
           </div>
-        </div> {/* eof list-header */}
-
-        { cards && <Cards cards={cards} /> }
-
-        <div className='card-composer-container'>
-          <AddCard listId={list.id} />
         </div>
-      </div>
-    </div>
+      )}
+    </Draggable>
   )
 }
 
