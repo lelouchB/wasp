@@ -25,7 +25,17 @@ export const updateList = async ({ listId, data }, context) => {
 export const deleteList = async ({ listId }, context) => {
   if (!context.user) { throw new HttpError(403) }
 
-  // TODO(matija): ensure that user is not trying to delete somebody else's list.
+  // We make sure that user is not trying to delete somebody else's list.
+  const list = await context.entities.List.findUnique({
+    where: { id: listId }
+  })
+  if (list.userId !== context.user.id) { throw new HttpError(403) }
+
+  // First delete all the cards that are in the list we want to delete.
+  await context.entities.Card.deleteMany({
+    where: { listId }   
+  })
+
   await context.entities.List.delete({
     where: { id: listId }
   })

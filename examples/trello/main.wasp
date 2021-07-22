@@ -79,7 +79,7 @@ action updateList {
 
 action deleteList {
     fn: import { deleteList } from "@ext/actions.js",
-    entities: [List]
+    entities: [List, Card]
 }
 
 // Cards
