@@ -37,6 +37,7 @@ psl=}
 entity List {=psl
     id          Int     @id @default(autoincrement())
     name        String
+    pos         Float
 
     // List has a single author.
     user        User    @relation(fields: [userId], references: [id])

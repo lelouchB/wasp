@@ -2,11 +2,12 @@ import HttpError from '@wasp/core/HttpError.js'
 
 /* List */
 
-export const createList = async ({ name }, context) => {
+export const createList = async ({ name, pos }, context) => {
   if (!context.user) { throw new HttpError(403) }
   return context.entities.List.create({
     data: {
       name,
+      pos,
       user: { connect: { id: context.user.id } }
     }
   })

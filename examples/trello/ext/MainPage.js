@@ -19,11 +19,28 @@ import waspLogo from './waspLogo.png'
 import './Main.css'
 
 
+const LIST_POS_SPACING = 2 ** 16
+
+const calcNewListPos = (lists) => {
+  if (!Array.isArray(lists) || lists.length === 0) return LIST_POS_SPACING - 1;
+
+  return Math.max(...lists.map(l => l.pos)) + LIST_POS_SPACING
+}
+
 const MainPage = ({ user }) => {
   const { data: lists, isFetching, error } = useQuery(getLists)
 
-  const onDragEnd = () => {
+  const onDragEnd = (result) => {
     console.log('onDragEnd!')
+    console.log(result)
+
+    // Dropped outside the list (of lists).
+    if (!result.destination) {
+      return
+    }
+
+    // Call a db action that updates the pos of the affected list.
+
   }
 
   return (
@@ -43,7 +60,7 @@ const MainPage = ({ user }) => {
             >
               { lists && <Lists lists={lists} />}
               {provided.placeholder}
-              <AddList />
+              <AddList newPos={calcNewListPos(lists)} />
             </div>
           )}
         </Droppable>
@@ -182,7 +199,7 @@ const Card = ({ card }) => {
   )
 }
 
-const AddList = () => {
+const AddList = ({ newPos }) => {
   const [isInEditMode, setIsInEditMode] = useState(false)
 
   const AddListButton = () => {
@@ -205,7 +222,7 @@ const AddList = () => {
       try {
         const listName = event.target.listName.value
         event.target.reset()
-        await createList({ name: listName })
+        await createList({ name: listName, pos: newPos })
       } catch (err) {
         window.alert('Error: ' + err.message)
       }
@@ -266,7 +283,7 @@ const AddCard = ({ listId }) => {
     const formRef = useRef(null)
 
     const submitOnEnter = (e) => {
-      if (e.keyCode == 13 /* && e.shiftKey == false */) {
+      if (e.keyCode === 13 /* && e.shiftKey == false */) {
         e.preventDefault()
 
         formRef.current.dispatchEvent(
