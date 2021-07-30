@@ -18,7 +18,8 @@ export const updateList = async ({ listId, data }, context) => {
   return context.entities.List.updateMany({
     where: { id: listId, user: { id: context.user.id } },
     data: {
-      name: data.name
+      name: data.name,
+      pos: data.pos
     }
   })
 }

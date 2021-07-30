@@ -27,20 +27,37 @@ const calcNewListPos = (lists) => {
   return Math.max(...lists.map(l => l.pos)) + LIST_POS_SPACING
 }
 
+// It is assummed that lists is sorted by pos, ascending.
+const calcMovedListPos = (lists, src, dest) => {
+  if (src === dest) return lists[src].pos
+  if (dest === 0) return (lists[0].pos / 2)
+  if (dest === lists.length - 1) return lists[lists.length - 1].pos + LIST_POS_SPACING
+
+  if (dest > src) return (lists[dest].pos + lists[dest + 1].pos) / 2
+  if (dest < src) return (lists[dest - 1].pos + lists[dest].pos) / 2
+}
+
 const MainPage = ({ user }) => {
   const { data: lists, isFetching, error } = useQuery(getLists)
 
-  const onDragEnd = (result) => {
-    console.log('onDragEnd!')
-    console.log(result)
+  // NOTE(matija): this is only a shallow copy.
+  const listsSortedByPos = lists && [...lists].sort((a, b) => a.pos - b.pos)
 
+  const onDragEnd = async (result) => {
     // Dropped outside the list (of lists).
     if (!result.destination) {
       return
     }
+    const newPos =
+      calcMovedListPos(listsSortedByPos, result.source.index, result.destination.index)
 
     // Call a db action that updates the pos of the affected list.
-
+    try {
+      const movedListId = listsSortedByPos[result.source.index].id
+      await updateList({ listId: movedListId, data: { pos: newPos } })
+    } catch (err) {
+      window.alert('Error while updating list position: ' + err.message)
+    }
   }
 
   return (
@@ -58,7 +75,7 @@ const MainPage = ({ user }) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              { lists && <Lists lists={lists} />}
+              { listsSortedByPos && <Lists lists={listsSortedByPos} /> }
               {provided.placeholder}
               <AddList newPos={calcNewListPos(lists)} />
             </div>
