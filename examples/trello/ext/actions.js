@@ -45,11 +45,12 @@ export const deleteList = async ({ listId }, context) => {
 
 /* Card */
 
-export const createCard = async ({ title, listId }, context) => {
+export const createCard = async ({ title, listId, pos }, context) => {
   if (!context.user) { throw new HttpError(403) }
   return context.entities.Card.create({
     data: {
       title,
+      pos,
       list: { connect: { id: listId } },
       author: { connect: { id: context.user.id } }
     }

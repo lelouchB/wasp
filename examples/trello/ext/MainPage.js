@@ -19,19 +19,21 @@ import waspLogo from './waspLogo.png'
 import './Main.css'
 
 
-const LIST_POS_SPACING = 2 ** 16
+// TODO(matija): rename to more general name.
+const DND_ITEM_POS_SPACING = 2 ** 16
 
-const calcNewListPos = (lists) => {
-  if (!Array.isArray(lists) || lists.length === 0) return LIST_POS_SPACING - 1;
+// It is expected that each item has .pos property.
+const calcNewDndItemPos = (items) => {
+  if (!Array.isArray(items) || items.length === 0) return DND_ITEM_POS_SPACING - 1;
 
-  return Math.max(...lists.map(l => l.pos)) + LIST_POS_SPACING
+  return Math.max(...items.map(l => l.pos)) + DND_ITEM_POS_SPACING
 }
 
 // It is assummed that lists is sorted by pos, ascending.
 const calcMovedListPos = (lists, src, dest) => {
   if (src === dest) return lists[src].pos
   if (dest === 0) return (lists[0].pos / 2)
-  if (dest === lists.length - 1) return lists[lists.length - 1].pos + LIST_POS_SPACING
+  if (dest === lists.length - 1) return lists[lists.length - 1].pos + DND_ITEM_POS_SPACING
 
   if (dest > src) return (lists[dest].pos + lists[dest + 1].pos) / 2
   if (dest < src) return (lists[dest - 1].pos + lists[dest].pos) / 2
@@ -77,7 +79,7 @@ const MainPage = ({ user }) => {
             >
               { listsSortedByPos && <Lists lists={listsSortedByPos} /> }
               {provided.placeholder}
-              <AddList newPos={calcNewListPos(lists)} />
+              <AddList newPos={calcNewDndItemPos(lists)} />
             </div>
           )}
         </Droppable>
@@ -88,7 +90,7 @@ const MainPage = ({ user }) => {
 }
 
 const Lists = ({ lists }) => {
-    // TODO(matija): what if lists is empty? Although we make sure not to add it to dom
+    // TODO(matija): what if lists is empty? Although we make sure not to add it to DOM
     // in that case.
 
     return lists.map((list, index) => (
@@ -191,7 +193,7 @@ const List = ({ list, index }) => {
             { cards && <Cards cards={cards} /> }
 
             <div className='card-composer-container'>
-              <AddCard listId={list.id} />
+              <AddCard listId={list.id} newPos={calcNewDndItemPos(cards)} />
             </div>
           </div>
         </div>
@@ -279,7 +281,7 @@ const AddList = ({ newPos }) => {
   )
 }
 
-const AddCard = ({ listId }) => {
+const AddCard = ({ listId, newPos }) => {
   const [isInEditMode, setIsInEditMode] = useState(false)
 
   const AddCardButton = () => {
@@ -314,7 +316,7 @@ const AddCard = ({ listId }) => {
       try {
         const cardTitle = event.target.cardTitle.value
         event.target.reset()
-        await createCard({ title: cardTitle, listId })
+        await createCard({ title: cardTitle, pos: newPos, listId })
       } catch (err) {
         window.alert('Error: ' + err.message)
       }

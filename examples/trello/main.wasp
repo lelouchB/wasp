@@ -49,6 +49,7 @@ psl=}
 entity Card {=psl
     id          Int     @id @default(autoincrement())
     title       String
+    pos         Float
 
     // Card belongs to a single list.
     list        List    @relation(fields: [listId], references: [id])
