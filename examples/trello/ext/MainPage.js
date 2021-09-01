@@ -164,38 +164,49 @@ const List = ({ list, index }) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <div className='list'>
-            <div className='list-header'>
-              <textarea
-                className='list-header-name mod-list-name'
-                onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
-                defaultValue={ list.name }
-              />
-              <div className='list-header-extras'>
-                <Popover
-                  isOpen={isPopoverOpen}
-                  onClickOutside={() => setIsPopoverOpen(false)}
-                  positions={['bottom', 'right', 'left']}
-                  align='start'
-                  padding={6}
-                  content={<ListMenu/>}
-                >
-                  <div
-                    className='list-header-extras-menu dark-hover'
-                    onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                  >
-                    <MoreHorizontal size={16}/>
+
+          <Droppable droppableId={`list-dropArea-${list.id}`} direction="vertical">
+            {(provided, snapshot) => (
+              <div className='list'
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                <div className='list-header'>
+                  <textarea
+                    className='list-header-name mod-list-name'
+                    onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
+                    defaultValue={ list.name }
+                  />
+                  <div className='list-header-extras'>
+                    <Popover
+                      isOpen={isPopoverOpen}
+                      onClickOutside={() => setIsPopoverOpen(false)}
+                      positions={['bottom', 'right', 'left']}
+                      align='start'
+                      padding={6}
+                      content={<ListMenu/>}
+                    >
+                      <div
+                        className='list-header-extras-menu dark-hover'
+                        onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                      >
+                        <MoreHorizontal size={16}/>
+                      </div>
+                    </Popover>
                   </div>
-                </Popover>
+                </div> {/* eof list-header */}
+
+
+                { cards && <Cards cards={cards} /> }
+
+                <div className='card-composer-container'>
+                  <AddCard listId={list.id} newPos={calcNewDndItemPos(cards)} />
+                </div>
+
               </div>
-            </div> {/* eof list-header */}
+            )}
+          </Droppable>
 
-            { cards && <Cards cards={cards} /> }
-
-            <div className='card-composer-container'>
-              <AddCard listId={list.id} newPos={calcNewDndItemPos(cards)} />
-            </div>
-          </div>
         </div>
       )}
     </Draggable>
