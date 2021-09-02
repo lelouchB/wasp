@@ -164,49 +164,52 @@ const List = ({ list, index }) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-
-          <Droppable droppableId={`list-dropArea-${list.id}`} direction="vertical">
-            {(provided, snapshot) => (
-              <div className='list'
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                <div className='list-header'>
-                  <textarea
-                    className='list-header-name mod-list-name'
-                    onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
-                    defaultValue={ list.name }
-                  />
-                  <div className='list-header-extras'>
-                    <Popover
-                      isOpen={isPopoverOpen}
-                      onClickOutside={() => setIsPopoverOpen(false)}
-                      positions={['bottom', 'right', 'left']}
-                      align='start'
-                      padding={6}
-                      content={<ListMenu/>}
-                    >
-                      <div
-                        className='list-header-extras-menu dark-hover'
-                        onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                      >
-                        <MoreHorizontal size={16}/>
-                      </div>
-                    </Popover>
+          <div className='list'>
+            <div className='list-header'>
+              <textarea
+                className='list-header-name mod-list-name'
+                onBlur={(e) => handleListNameUpdated(list.id, e.target.value)}
+                defaultValue={ list.name }
+              />
+              <div className='list-header-extras'>
+                <Popover
+                  isOpen={isPopoverOpen}
+                  onClickOutside={() => setIsPopoverOpen(false)}
+                  positions={['bottom', 'right', 'left']}
+                  align='start'
+                  padding={6}
+                  content={<ListMenu/>}
+                >
+                  <div
+                    className='list-header-extras-menu dark-hover'
+                    onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                  >
+                    <MoreHorizontal size={16}/>
                   </div>
-                </div> {/* eof list-header */}
-
-
-                { cards && <Cards cards={cards} /> }
-
-                <div className='card-composer-container'>
-                  <AddCard listId={list.id} newPos={calcNewDndItemPos(cards)} />
-                </div>
-
+                </Popover>
               </div>
-            )}
-          </Droppable>
+            </div> {/* eof list-header */}
 
+            <Droppable
+              droppableId={`list-dropArea-${list.id}`}
+              direction="vertical"
+              type="CARD"
+            >
+              {(provided, snapshot) => (
+                <div className='cards'
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  { cards && <Cards cards={cards} /> }
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+
+            <div className='card-composer-container'>
+              <AddCard listId={list.id} newPos={calcNewDndItemPos(cards)} />
+            </div>
+          </div>
         </div>
       )}
     </Draggable>
@@ -216,16 +219,28 @@ const List = ({ list, index }) => {
 const Cards = ({ cards }) => {
   return (
     <div className='list-cards'>
-      { cards.map((card) => <Card card={card} key={card.id} />) }
+      { cards.map((card, index) => <Card card={card} key={card.id} index={index} />) }
     </div>
   )
 }
 
-const Card = ({ card }) => {
+const Card = ({ card, index }) => {
   return (
-    <div className='list-card'>
-      <span className='list-card-title'>{ card.title }</span>
-    </div>
+    <Draggable
+      key={card.id}
+      draggableId={`card-draggable-${card.id}`}
+      index={index}
+    >
+      {(provided, snapshot) => (
+        <div className='list-card'
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <span className='list-card-title'>{ card.title }</span>
+        </div>
+      )}
+    </Draggable>
   )
 }
 
