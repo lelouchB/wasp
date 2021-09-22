@@ -50,6 +50,14 @@ const MainPage = ({ user }) => {
     if (!result.destination) {
       return
     }
+
+    // TODO(matija): add logic for cards vs lists.
+    console.log('source drop id: ', result.source.droppableId)
+    console.log('dest drop id: ', result.destination.droppableId)
+    console.log(result)
+    return
+
+
     const newPos =
       calcMovedListPos(listsSortedByPos, result.source.index, result.destination.index)
 
@@ -71,7 +79,7 @@ const MainPage = ({ user }) => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
+        <Droppable droppableId="board" direction="horizontal" type="BOARD" >
           {(provided, snapshot) => (
             <div id='board' className='u-fancy-scrollbar'
               ref={provided.innerRef}
