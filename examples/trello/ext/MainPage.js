@@ -29,6 +29,16 @@ const calcNewDndItemPos = (items) => {
   return Math.max(...items.map(l => l.pos)) + DND_ITEM_POS_SPACING
 }
 
+const calcNewPosOfDndItemMovedWithinList = (items, srcIdx, destIdx) => {
+  if (srcIdx === destIdx) return items[srcIdx].pos
+  if (destIdx === 0) return (items[0].pos / 2)
+  if (destIdx === items.length - 1) return items[items.length - 1].pos + DND_ITEM_POS_SPACING
+
+  if (destIdx > srcIdx) return (items[destIdx].pos + items[destIdx + 1].pos) / 2
+  if (destIdx < srcIdx) return (items[destIdx - 1].pos + items[destIdx].pos) / 2
+}
+
+// TODO(matija): remove this, we won't use it anymore.
 // It is assummed that lists is sorted by pos, ascending.
 const calcMovedListPos = (lists, src, dest) => {
   if (src === dest) return lists[src].pos
@@ -46,16 +56,34 @@ const MainPage = ({ user }) => {
   const listsSortedByPos = lists && [...lists].sort((a, b) => a.pos - b.pos)
 
   const onDragEnd = async (result) => {
-    // Dropped outside the list (of lists).
+    // Item was dropped outside of the droppable area.
     if (!result.destination) {
       return
     }
 
     // TODO(matija): add logic for cards vs lists.
+    console.log(listsSortedByPos)
+    console.log(result.type)
     console.log('source drop id: ', result.source.droppableId)
     console.log('dest drop id: ', result.destination.droppableId)
+    console.log('//')
+    console.log(result.source.index, ' -> ', result.destination.index)
     console.log(result)
     return
+
+    if (result.type === 'BOARD') {
+      // Do old stuff.
+
+    } else if (result.type === 'CARD') {
+      const sourceListId = result.source.droppableId
+      const destListId = result.destination.droppableId
+      const movedCardId = result.draggableId
+
+      // TODO(matija): Update the moved card accordingly (change its list if needed).
+
+    } else {
+      // TODO(matija): throw error.
+    }
 
 
     const newPos =
@@ -163,7 +191,7 @@ const List = ({ list, index }) => {
   return (
     <Draggable
       key={list.id}
-      draggableId={`dragItem-${list.id}`}
+      draggableId={`listDraggable-${list.id}`}
       index={index}
     >
       {(provided, snapshot) => (
@@ -199,7 +227,7 @@ const List = ({ list, index }) => {
             </div> {/* eof list-header */}
 
             <Droppable
-              droppableId={`list-dropArea-${list.id}`}
+              droppableId={`${list.id}`}
               direction="vertical"
               type="CARD"
             >
@@ -236,7 +264,7 @@ const Card = ({ card, index }) => {
   return (
     <Draggable
       key={card.id}
-      draggableId={`card-draggable-${card.id}`}
+      draggableId={`${card.id}`}
       index={index}
     >
       {(provided, snapshot) => (
