@@ -17,3 +17,11 @@ export const getCards = async (args, context) => {
     }
   })
 }
+
+export const getListsAndCards = async (args, context) => {
+  if (!context.user) { throw new HttpError(403) }
+  return context.entities.List.findMany({
+    where: { user: { id: context.user.id } },
+    include: { cards: true }
+  })
+}

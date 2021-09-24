@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import { useQuery } from '@wasp/queries'
 import getLists from '@wasp/queries/getLists'
+import getListsAndCards from '@wasp/queries/getListsAndCards'
 import createList from '@wasp/actions/createList'
 import updateList from '@wasp/actions/updateList'
 import deleteList from '@wasp/actions/deleteList'
@@ -29,6 +30,7 @@ const calcNewDndItemPos = (items) => {
   return Math.max(...items.map(l => l.pos)) + DND_ITEM_POS_SPACING
 }
 
+// It is assummed that items is sorted by pos, ascending.
 const calcNewPosOfDndItemMovedWithinList = (items, srcIdx, destIdx) => {
   if (srcIdx === destIdx) return items[srcIdx].pos
   if (destIdx === 0) return (items[0].pos / 2)
@@ -49,11 +51,29 @@ const calcMovedListPos = (lists, src, dest) => {
   if (dest < src) return (lists[dest - 1].pos + lists[dest].pos) / 2
 }
 
+const createListIdToSortedCardsMap = (listsAndCards) => {
+  const listIdToSortedCardsMap = {}
+
+  listsAndCards.forEach(list => {
+    listIdToSortedCardsMap[list.id] = [...list.cards].sort((a, b) => a.pos - b.pos)
+  })
+  
+  return listIdToSortedCardsMap
+}
+
 const MainPage = ({ user }) => {
+  // TODO(matija): remove this once we switched to the query below.
   const { data: lists, isFetching, error } = useQuery(getLists)
+
+  const { data: listsAndCards, isFetchingListsAndCards, errorListsAndCards } = useQuery(getListsAndCards)
+  console.log(listsAndCards)
 
   // NOTE(matija): this is only a shallow copy.
   const listsSortedByPos = lists && [...lists].sort((a, b) => a.pos - b.pos)
+
+  // Create a map with listId -> cards sorted by pos
+  const listIdToSortedCardsMap = listsAndCards && createListIdToSortedCardsMap(listsAndCards)
+  console.log(listIdToSortedCardsMap)
 
   const onDragEnd = async (result) => {
     // Item was dropped outside of the droppable area.
@@ -69,33 +89,40 @@ const MainPage = ({ user }) => {
     console.log('//')
     console.log(result.source.index, ' -> ', result.destination.index)
     console.log(result)
-    return
 
+    // TODO(matija): make an enum for type strings (BOARD, CARD).
     if (result.type === 'BOARD') {
-      // Do old stuff.
+      const newPos =
+        calcMovedListPos(listsSortedByPos, result.source.index, result.destination.index)
 
+      // Call a db action that updates the pos of the affected list.
+      try {
+        const movedListId = listsSortedByPos[result.source.index].id
+        await updateList({ listId: movedListId, data: { pos: newPos } })
+      } catch (err) {
+        window.alert('Error while updating list position: ' + err.message)
+      }
     } else if (result.type === 'CARD') {
       const sourceListId = result.source.droppableId
       const destListId = result.destination.droppableId
-      const movedCardId = result.draggableId
+      const movedCardId = result.draggableId // Abusing this a bit.
 
-      // TODO(matija): Update the moved card accordingly (change its list if needed).
+      const destListCardsSortedByPos = listIdToSortedCardsMap[destListId]
 
+      if (sourceListId === destListId) {
+        const newPos = calcNewPosOfDndItemMovedWithinList(
+          destListCardsSortedByPos, result.source.index, result.destination.index
+        )
+        console.log('new pos: ', newPos)
+
+      } else {
+        // Insert in another list.
+      }
     } else {
       // TODO(matija): throw error.
     }
 
 
-    const newPos =
-      calcMovedListPos(listsSortedByPos, result.source.index, result.destination.index)
-
-    // Call a db action that updates the pos of the affected list.
-    try {
-      const movedListId = listsSortedByPos[result.source.index].id
-      await updateList({ listId: movedListId, data: { pos: newPos } })
-    } catch (err) {
-      window.alert('Error while updating list position: ' + err.message)
-    }
   }
 
   return (

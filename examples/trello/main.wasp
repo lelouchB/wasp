@@ -62,6 +62,11 @@ psl=}
 
 // ------------------- Queries and actions
 
+query getListsAndCards {
+    fn: import { getListsAndCards } from "@ext/queries.js",
+    entities: [List, Card]
+}
+
 // Lists
 
 query getLists {
