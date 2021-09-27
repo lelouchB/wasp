@@ -101,6 +101,11 @@ action createCard {
     entities: [Card]
 }
 
+action updateCard {
+    fn: import { updateCard } from "@ext/actions.js",
+    entities: [Card]
+}
+
 dependencies {=json
     "react-feather": "2.0.9",
     "classnames": "2.3.1",

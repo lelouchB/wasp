@@ -13,6 +13,7 @@ import deleteList from '@wasp/actions/deleteList'
 
 import getCards from '@wasp/queries/getCards'
 import createCard from '@wasp/actions/createCard'
+import updateCard from '@wasp/actions/updateCard'
 
 import UserPageLayout from './UserPageLayout'
 
@@ -25,7 +26,7 @@ const DND_ITEM_POS_SPACING = 2 ** 16
 
 // It is expected that each item has .pos property.
 const calcNewDndItemPos = (items) => {
-  if (!Array.isArray(items) || items.length === 0) return DND_ITEM_POS_SPACING - 1;
+  if (!Array.isArray(items) || items.length === 0) return DND_ITEM_POS_SPACING - 1
 
   return Math.max(...items.map(l => l.pos)) + DND_ITEM_POS_SPACING
 }
@@ -51,6 +52,15 @@ const calcMovedListPos = (lists, src, dest) => {
   if (dest < src) return (lists[dest - 1].pos + lists[dest].pos) / 2
 }
 
+// It is assummed that items is sorted by pos, ascending.
+const calcNewPosOfDndItemInsertedInAnotherList = (items, destIdx) => {
+  if (items.length === 0) return DND_ITEM_POS_SPACING - 1
+  if (destIdx === 0) return (items[0].pos / 2)
+  if (destIdx === items.length - 1) return items[items.length - 1].pos + DND_ITEM_POS_SPACING
+
+  return (items[destIdx - 1].pos + items[destIdx].pos) / 2
+}
+
 const createListIdToSortedCardsMap = (listsAndCards) => {
   const listIdToSortedCardsMap = {}
 
@@ -66,29 +76,19 @@ const MainPage = ({ user }) => {
   const { data: lists, isFetching, error } = useQuery(getLists)
 
   const { data: listsAndCards, isFetchingListsAndCards, errorListsAndCards } = useQuery(getListsAndCards)
-  console.log(listsAndCards)
 
+  // TODO(matija): this should also become obsolete?
   // NOTE(matija): this is only a shallow copy.
   const listsSortedByPos = lists && [...lists].sort((a, b) => a.pos - b.pos)
 
   // Create a map with listId -> cards sorted by pos
   const listIdToSortedCardsMap = listsAndCards && createListIdToSortedCardsMap(listsAndCards)
-  console.log(listIdToSortedCardsMap)
 
   const onDragEnd = async (result) => {
     // Item was dropped outside of the droppable area.
     if (!result.destination) {
       return
     }
-
-    // TODO(matija): add logic for cards vs lists.
-    console.log(listsSortedByPos)
-    console.log(result.type)
-    console.log('source drop id: ', result.source.droppableId)
-    console.log('dest drop id: ', result.destination.droppableId)
-    console.log('//')
-    console.log(result.source.index, ' -> ', result.destination.index)
-    console.log(result)
 
     // TODO(matija): make an enum for type strings (BOARD, CARD).
     if (result.type === 'BOARD') {
@@ -105,7 +105,7 @@ const MainPage = ({ user }) => {
     } else if (result.type === 'CARD') {
       const sourceListId = result.source.droppableId
       const destListId = result.destination.droppableId
-      const movedCardId = result.draggableId // Abusing this a bit.
+      const movedCardId = Number(result.draggableId) // Abusing this a bit.
 
       const destListCardsSortedByPos = listIdToSortedCardsMap[destListId]
 
@@ -113,10 +113,23 @@ const MainPage = ({ user }) => {
         const newPos = calcNewPosOfDndItemMovedWithinList(
           destListCardsSortedByPos, result.source.index, result.destination.index
         )
-        console.log('new pos: ', newPos)
+        try {
+          await updateCard({ cardId: movedCardId, data: { pos: newPos } })
+        } catch (err) {
+          window.alert('Error while updating card position: ' + err.message)
+        }
 
       } else {
         // Insert in another list.
+        const newPos = calcNewPosOfDndItemInsertedInAnotherList(
+          destListCardsSortedByPos, result.destination.index
+        )
+        // TODO(matija): this part could be extracted?
+        try {
+          await updateCard({ cardId: movedCardId, data: { pos: newPos, listId: destListId } })
+        } catch (err) {
+          window.alert('Error while updating card position: ' + err.message)
+        }
       }
     } else {
       // TODO(matija): throw error.
@@ -140,7 +153,9 @@ const MainPage = ({ user }) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              { listsSortedByPos && <Lists lists={listsSortedByPos} /> }
+              { listsSortedByPos && listIdToSortedCardsMap &&
+                <Lists lists={listsSortedByPos} listIdToSortedCardsMap={listIdToSortedCardsMap} /> 
+              }
               {provided.placeholder}
               <AddList newPos={calcNewDndItemPos(lists)} />
             </div>
@@ -152,17 +167,21 @@ const MainPage = ({ user }) => {
   )
 }
 
-const Lists = ({ lists }) => {
+const Lists = ({ lists, listIdToSortedCardsMap }) => {
     // TODO(matija): what if lists is empty? Although we make sure not to add it to DOM
     // in that case.
 
-    return lists.map((list, index) => (
-      <List list={list} key={list.id} index={index} />
-    )) 
+    return lists.map((list, index) => {
+      return (
+        <List list={list} key={list.id} index={index} cardsSortedByPos={listIdToSortedCardsMap[list.id]} />
+      )
+    }) 
 }
 
-const List = ({ list, index }) => {
-  const { data: cards, isFetching, error } = useQuery(getCards, { listId: list.id })
+const List = ({ list, index, cardsSortedByPos }) => {
+  //const { data: cards, isFetching, error } = useQuery(getCards, { listId: list.id })
+
+  const cards = cardsSortedByPos
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
