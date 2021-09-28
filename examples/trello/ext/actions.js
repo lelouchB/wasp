@@ -59,15 +59,14 @@ export const createCard = async ({ title, listId, pos }, context) => {
 
 export const updateCard = async ({ cardId, data }, context) => {
   if (!context.user) { throw new HttpError(403) }
-  // TODO(matija): check if user has the card.
+  // TODO(matija): check if user owns the card.
+
   return context.entities.Card.update({
     //where: { id: cardId, author: { id: context.user.id } },
     where: { id: cardId },
     data: {
       pos: data.pos,
-      //list: { disconnect: true }
       list: { connect: { id: parseInt(data.listId) } }
-      //listId: data.listId
     }
   })
 }

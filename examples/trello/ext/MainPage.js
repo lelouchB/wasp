@@ -56,7 +56,7 @@ const calcMovedListPos = (lists, src, dest) => {
 const calcNewPosOfDndItemInsertedInAnotherList = (items, destIdx) => {
   if (items.length === 0) return DND_ITEM_POS_SPACING - 1
   if (destIdx === 0) return (items[0].pos / 2)
-  if (destIdx === items.length - 1) return items[items.length - 1].pos + DND_ITEM_POS_SPACING
+  if (destIdx === items.length) return items[items.length - 1].pos + DND_ITEM_POS_SPACING
 
   return (items[destIdx - 1].pos + items[destIdx].pos) / 2
 }
@@ -75,7 +75,8 @@ const MainPage = ({ user }) => {
   // TODO(matija): remove this once we switched to the query below.
   const { data: lists, isFetching, error } = useQuery(getLists)
 
-  const { data: listsAndCards, isFetchingListsAndCards, errorListsAndCards } = useQuery(getListsAndCards)
+  const { data: listsAndCards, isFetchingListsAndCards, errorListsAndCards }
+    = useQuery(getListsAndCards)
 
   // TODO(matija): this should also become obsolete?
   // NOTE(matija): this is only a shallow copy.
@@ -114,7 +115,8 @@ const MainPage = ({ user }) => {
           destListCardsSortedByPos, result.source.index, result.destination.index
         )
         try {
-          await updateCard({ cardId: movedCardId, data: { pos: newPos } })
+          //await updateCard({ cardId: movedCardId, data: { pos: newPos } })
+          await updateCard({ cardId: movedCardId, data: { pos: newPos, listId: destListId } })
         } catch (err) {
           window.alert('Error while updating card position: ' + err.message)
         }
